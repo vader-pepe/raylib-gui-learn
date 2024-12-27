@@ -9,7 +9,7 @@ fn main() {
         .title("Hello, World")
         .build();
 
-    let btn: Texture2D = rl
+    let btn = rl
         .load_texture(
             &thread,
             "resources/01_Flat_Theme/Spritesheets/Spritesheet_UI_Flat.png",
@@ -41,53 +41,46 @@ fn main() {
         let mouse_point = d.get_mouse_position();
 
         d.clear_background(Color::WHITE);
-        d.draw_texture_pro(
+        draw_btn(
+            &mut d,
+            &font,
             &btn,
-            btn_rec,
-            Rectangle {
-                x: ((SCREEN_WIDTH / 2) - (32 * 2)) as f32,
-                y: ((SCREEN_HEIGHT / 2) - (32 * 2)) as f32,
-                height: 32.0 * 2.0,
-                width: 64.0 * 2.0,
-            },
-            Vector2 { x: 0.0, y: 0.0 },
-            0.0,
-            Color::WHITE,
-        );
-        d.draw_texture_pro(
-            &btn,
-            btn_rec,
-            Rectangle {
+            &btn_rec,
+            "START",
+            &Rectangle {
                 x: ((SCREEN_WIDTH / 2) - (32 * 2)) as f32,
                 y: ((SCREEN_HEIGHT / 2) - (32 * 2) - 50) as f32,
                 height: 32.0 * 2.0,
                 width: 64.0 * 2.0,
             },
-            Vector2 { x: 0.0, y: 0.0 },
-            0.0,
-            Color::WHITE,
         );
-        d.draw_texture_pro(
+        draw_btn(
+            &mut d,
+            &font,
             &btn,
-            btn_rec,
-            Rectangle {
+            &btn_rec,
+            "EXIT",
+            &Rectangle {
                 x: ((SCREEN_WIDTH / 2) - (32 * 2)) as f32,
-                y: ((SCREEN_HEIGHT / 2) - (32 * 2) - 100) as f32,
+                y: ((SCREEN_HEIGHT / 2) - (32 * 2) + 50) as f32,
                 height: 32.0 * 2.0,
                 width: 64.0 * 2.0,
             },
-            Vector2 { x: 0.0, y: 0.0 },
-            0.0,
-            Color::WHITE,
         );
-        //d.draw_text_ex(
-        //    &font,
-        //    "AYAM",
-        //    Vector2 { x: 9.0, y: 15.0 },
-        //    34.0,
-        //    1.0,
-        //    Color::BLACK,
-        //);
+        draw_btn(
+            &mut d,
+            &font,
+            &btn,
+            &btn_rec,
+            "SETTINGS",
+            &Rectangle {
+                x: ((SCREEN_WIDTH / 2) - (32 * 2)) as f32,
+                y: ((SCREEN_HEIGHT / 2) - (32 * 2)) as f32,
+                height: 32.0 * 2.0,
+                width: 64.0 * 2.0,
+            },
+        );
+
         if btn_bounds.check_collision_point_rec(mouse_point) {
             if d.is_mouse_button_down(MouseButton::MOUSE_BUTTON_LEFT) {
                 is_clicked = true;
@@ -99,4 +92,34 @@ fn main() {
             println!("clicked");
         }
     }
+}
+
+fn draw_btn(
+    d: &mut RaylibDrawHandle,
+    font: &Font,
+    texture: &Texture2D,
+    rec: &Rectangle,
+    text: &str,
+    pos: &Rectangle,
+) {
+    let font_dims = d.measure_text(text, 24);
+    d.draw_texture_pro(
+        &texture,
+        rec,
+        pos,
+        Vector2 { x: 0.0, y: 0.0 },
+        0.0,
+        Color::WHITE,
+    );
+    d.draw_text_ex(
+        &font,
+        text,
+        Vector2 {
+            x: pos.x + (pos.width / 2.0) - ((font_dims as f32 / 2.5) as f32),
+            y: pos.y + (pos.height / 2.0) - 15.0,
+        },
+        24.0,
+        1.0,
+        Color::BLACK,
+    );
 }
