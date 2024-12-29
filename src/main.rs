@@ -3,6 +3,14 @@ use raylib::prelude::*;
 const SCREEN_WIDTH: i32 = 640;
 const SCREEN_HEIGHT: i32 = 480;
 
+fn goto_scene() {
+    println!("goint to scene");
+}
+
+fn doing_nothing() {
+    println!("doing nothing");
+}
+
 fn main() {
     let (mut rl, thread) = raylib::init()
         .size(SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -27,70 +35,56 @@ fn main() {
         height: 32.0,
     };
 
-    let btn_bounds = Rectangle {
-        x: 0.0,
-        y: 0.0,
-        height: btn_rec.height as f32,
-        width: btn_rec.width as f32,
-    };
-
-    let mut is_clicked = false;
-
     while !rl.window_should_close() {
         let mut d = rl.begin_drawing(&thread);
-        let mouse_point = d.get_mouse_position();
 
         d.clear_background(Color::WHITE);
+        let start_btn_rec = Rectangle {
+            x: ((SCREEN_WIDTH / 2) - (32 * 2)) as f32,
+            y: ((SCREEN_HEIGHT / 2) - (32 * 2) - 50) as f32,
+            height: 32.0 * 2.0,
+            width: 64.0 * 2.0,
+        };
+
         draw_btn(
             &mut d,
             &font,
             &btn,
             &btn_rec,
             "START",
-            &Rectangle {
-                x: ((SCREEN_WIDTH / 2) - (32 * 2)) as f32,
-                y: ((SCREEN_HEIGHT / 2) - (32 * 2) - 50) as f32,
-                height: 32.0 * 2.0,
-                width: 64.0 * 2.0,
-            },
+            &start_btn_rec,
+            &goto_scene,
         );
-        draw_btn(
-            &mut d,
-            &font,
-            &btn,
-            &btn_rec,
-            "EXIT",
-            &Rectangle {
-                x: ((SCREEN_WIDTH / 2) - (32 * 2)) as f32,
-                y: ((SCREEN_HEIGHT / 2) - (32 * 2) + 50) as f32,
-                height: 32.0 * 2.0,
-                width: 64.0 * 2.0,
-            },
-        );
+        let settings_btn_rec = Rectangle {
+            x: ((SCREEN_WIDTH / 2) - (32 * 2)) as f32,
+            y: ((SCREEN_HEIGHT / 2) - (32 * 2)) as f32,
+            height: 32.0 * 2.0,
+            width: 64.0 * 2.0,
+        };
         draw_btn(
             &mut d,
             &font,
             &btn,
             &btn_rec,
             "SETTINGS",
-            &Rectangle {
-                x: ((SCREEN_WIDTH / 2) - (32 * 2)) as f32,
-                y: ((SCREEN_HEIGHT / 2) - (32 * 2)) as f32,
-                height: 32.0 * 2.0,
-                width: 64.0 * 2.0,
-            },
+            &settings_btn_rec,
+            &doing_nothing,
         );
-
-        if btn_bounds.check_collision_point_rec(mouse_point) {
-            if d.is_mouse_button_down(MouseButton::MOUSE_BUTTON_LEFT) {
-                is_clicked = true;
-            } else {
-                is_clicked = false;
-            };
-        }
-        if is_clicked {
-            println!("clicked");
-        }
+        let exit_btn_rec = Rectangle {
+            x: ((SCREEN_WIDTH / 2) - (32 * 2)) as f32,
+            y: ((SCREEN_HEIGHT / 2) - (32 * 2) + 50) as f32,
+            height: 32.0 * 2.0,
+            width: 64.0 * 2.0,
+        };
+        draw_btn(
+            &mut d,
+            &font,
+            &btn,
+            &btn_rec,
+            "EXIT",
+            &exit_btn_rec,
+            &doing_nothing,
+        );
     }
 }
 
@@ -101,7 +95,15 @@ fn draw_btn(
     rec: &Rectangle,
     text: &str,
     pos: &Rectangle,
+    f: &dyn Fn(),
 ) {
+    let mouse_point = d.get_mouse_position();
+    if pos.check_collision_point_rec(mouse_point) {
+        if d.is_mouse_button_down(MouseButton::MOUSE_BUTTON_LEFT) {
+            f();
+        }
+    }
+
     let font_dims = d.measure_text(text, 24);
     d.draw_texture_pro(
         &texture,
